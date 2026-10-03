@@ -214,6 +214,11 @@ body {
   color: #f7f3ea;
 }
 
+.details__button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .details__note {
   margin: 2.25rem 0 0;
   font-family: 'Cormorant Garamond', 'Times New Roman', serif;

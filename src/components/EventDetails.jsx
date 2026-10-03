@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import submitRsvp from '../submitRsvp.js'
 
 const emptyAttend = {
   name: '',
@@ -7,16 +8,48 @@ const emptyAttend = {
   plusOneName: '',
 }
 
+const saveError = 'We could not save your reply. Please try again.'
+
 const EventDetails = ({ invitation }) => {
   const [response, setResponse] = useState(null)
   const [attend, setAttend] = useState(emptyAttend)
   const [submitted, setSubmitted] = useState(false)
+  const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
   const choose = (next) => {
-    setResponse(next)
-    setSubmitted(false)
+    if (saving) return
     setError('')
+
+    if (next === 'decline') {
+      if (response === 'decline' && submitted) return
+      saveDecline()
+      return
+    }
+
+    setResponse('attend')
+    setSubmitted(false)
+  }
+
+  const saveDecline = async () => {
+    setResponse('decline')
+    setSubmitted(false)
+    setSaving(true)
+
+    try {
+      await submitRsvp({
+        response: 'Will not attend',
+        name: '',
+        phone: '',
+        plusOne: 'No',
+        plusOneName: '',
+      })
+      setSubmitted(true)
+    } catch {
+      setError(saveError)
+    } finally {
+      setSaving(false)
+    }
   }
 
   const updateAttend = (field) => (event) => {
@@ -29,7 +62,7 @@ const EventDetails = ({ invitation }) => {
     setError('')
   }
 
-  const submitAttend = (event) => {
+  const submitAttend = async (event) => {
     event.preventDefault()
     const name = attend.name.trim()
     const phone = attend.phone.trim()
@@ -43,8 +76,24 @@ const EventDetails = ({ invitation }) => {
       return
     }
 
-    setAttend({ ...attend, name, phone, plusOneName })
-    setSubmitted(true)
+    const reply = { ...attend, name, phone, plusOneName }
+    setAttend(reply)
+    setSaving(true)
+
+    try {
+      await submitRsvp({
+        response: 'Will attend',
+        name,
+        phone,
+        plusOne: reply.hasPlusOne ? 'Yes' : 'No',
+        plusOneName: reply.hasPlusOne ? plusOneName : '',
+      })
+      setSubmitted(true)
+    } catch {
+      setError(saveError)
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -62,6 +111,7 @@ const EventDetails = ({ invitation }) => {
                 className={selected ? 'details__button is-selected' : 'details__button'}
                 type="button"
                 aria-pressed={selected}
+                disabled={saving}
                 onClick={() => choose(value)}
               >
                 {label}
@@ -70,8 +120,13 @@ const EventDetails = ({ invitation }) => {
           })}
         </div>
 
-        {response === 'decline' && (
+        {response === 'decline' && submitted && (
           <p className="details__note">{invitation.declineMessage}</p>
+        )}
+        {response === 'decline' && error && (
+          <p className="details__error" role="alert">
+            {error}
+          </p>
         )}
 
         {response === 'attend' && submitted && (
@@ -141,8 +196,8 @@ const EventDetails = ({ invitation }) => {
                 {error}
               </p>
             )}
-            <button className="details__button details__submit" type="submit">
-              Submit
+            <button className="details__button details__submit" type="submit" disabled={saving}>
+              {saving ? 'Sending' : 'Submit'}
             </button>
           </form>
         )}
