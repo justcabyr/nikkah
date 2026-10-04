@@ -11,7 +11,7 @@ const emptyAttend = {
 const saveError = 'We could not save your reply. Please try again.'
 
 const EventDetails = ({ invitation }) => {
-  const [response, setResponse] = useState(null)
+  const [response, setResponse] = useState('attend')
   const [attend, setAttend] = useState(emptyAttend)
   const [submitted, setSubmitted] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -22,34 +22,13 @@ const EventDetails = ({ invitation }) => {
     setError('')
 
     if (next === 'decline') {
-      if (response === 'decline' && submitted) return
-      saveDecline()
+      setResponse('decline')
+      setSubmitted(true)
       return
     }
 
     setResponse('attend')
     setSubmitted(false)
-  }
-
-  const saveDecline = async () => {
-    setResponse('decline')
-    setSubmitted(false)
-    setSaving(true)
-
-    try {
-      await submitRsvp({
-        response: 'Will not attend',
-        name: '',
-        phone: '',
-        plusOne: 'No',
-        plusOneName: '',
-      })
-      setSubmitted(true)
-    } catch {
-      setError(saveError)
-    } finally {
-      setSaving(false)
-    }
   }
 
   const updateAttend = (field) => (event) => {
@@ -120,13 +99,8 @@ const EventDetails = ({ invitation }) => {
           })}
         </div>
 
-        {response === 'decline' && submitted && (
+        {response === 'decline' && (
           <p className="details__note">{invitation.declineMessage}</p>
-        )}
-        {response === 'decline' && error && (
-          <p className="details__error" role="alert">
-            {error}
-          </p>
         )}
 
         {response === 'attend' && submitted && (
