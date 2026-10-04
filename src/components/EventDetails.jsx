@@ -11,7 +11,7 @@ const emptyAttend = {
 const saveError = 'We could not save your reply. Please try again.'
 
 const EventDetails = ({ invitation }) => {
-  const [response, setResponse] = useState(null)
+  const [response, setResponse] = useState('attend')
   const [attend, setAttend] = useState(emptyAttend)
   const [submitted, setSubmitted] = useState(false)
   const [saving, setSaving] = useState(false)
