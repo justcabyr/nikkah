@@ -308,6 +308,7 @@ body {
 }
 
 .details__line {
+  display: block;
   margin: 0.2rem 0;
   font-family: 'Jost', sans-serif;
   font-size: 1rem;

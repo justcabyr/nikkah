@@ -16,6 +16,9 @@ const invitation = {
   dateLines: ['Friday, October 16', '7:00PM NDT'],
   addressLabel: 'Address',
   addressLines: ['23 Melrose Pl', "St. John's, NL A1E 5V7"],
+  wishlistLabel: 'Wishlist',
+  wishlistText: 'Nikkah Wishlist',
+  wishlistUrl: 'https://www.wishbob.com/ytcbieuznd',
 }
 
 export default invitation
