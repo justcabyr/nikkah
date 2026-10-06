@@ -188,6 +188,15 @@ const EventDetails = ({ invitation }) => {
             {line}
           </p>
         ))}
+        <p className="details__label">{invitation.wishlistLabel}</p>
+        <a
+          className="details__line"
+          href={invitation.wishlistUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {invitation.wishlistText}
+        </a>
       </div>
     </section>
   )
